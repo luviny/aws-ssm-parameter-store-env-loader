@@ -12,11 +12,15 @@ async function bootstrap() {
         const service = new Service({ region: awsRegion });
 
         const res = await service.findAll(awsBasePath);
+        const parameters = res?.Parameters || [];
+
+        for (const parameter of parameters) {
+            if (parameter.Value) setSecret(parameter.Value);
+        }
 
         if (isLoadEnv) {
-            for (const parameter of res?.Parameters || []) {
+            for (const parameter of parameters) {
                 if (!parameter.Name || !parameter.Value) return;
-                setSecret(parameter.Value);
                 exportVariable(service.transformKey(parameter.Name), parameter.Value);
             }
         }
