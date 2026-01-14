@@ -8,6 +8,14 @@ inputs:
   aws-base-path:
     description: 'The path in SSM Parameter Store'
     required: true
+  load-env:
+    description: 'Whether to load environment variables'
+    required: false
+    default: 'true'
+  env-file-name:
+    description: 'The output environment variable file name'
+    required: false
+
 runs:
   using: 'node20'
   main: 'dist/main.js'

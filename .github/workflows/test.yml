@@ -25,6 +25,11 @@ jobs:
       with:
         aws-region: ap-northeast-2
         aws-base-path: /test
+        load-env: true
+        env-file-name: .env
         
     - name: Env Test
       run: echo "${{ env.DB_HOST }}"
+      
+    - name: Env File Test
+      run: cat .env
