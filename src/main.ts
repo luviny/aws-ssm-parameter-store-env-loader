@@ -21,12 +21,16 @@ async function bootstrap() {
         }
 
         if (envFileName) {
+            debug(`Starting to create environment file: ${envFileName}`);
+
             const envFile = fs.createWriteStream(envFileName);
             for (const parameter of res?.Parameters || []) {
                 if (!parameter.Name || !parameter.Value) return;
                 envFile.write(`${service.transformKey(parameter.Name)}="${parameter.Value}"\n`);
             }
             envFile.end();
+
+            debug(`Environment file creation completed: ${envFileName}`);
         }
     } catch (error) {
         if (error instanceof Error) {
