@@ -1,4 +1,4 @@
-import { getInput, setFailed, setOutput, debug, exportVariable, setSecret } from '@actions/core';
+import { getInput, setFailed, setOutput, debug, exportVariable, setSecret, startGroup, info } from '@actions/core';
 import { Service } from './service';
 import * as fs from 'node:fs';
 import { stdout } from 'node:process';
@@ -12,19 +12,20 @@ async function bootstrap() {
 
         const service = new Service({ region: awsRegion });
 
+        startGroup('Fetch SSM Parameters');
         const res = await service.findAll(awsBasePath);
         const parameters = res?.Parameters || [];
 
         if (!parameters.length) return;
 
-        console.log('Processing parameter encryption');
+        info('Processing parameter encryption');
         for (const parameter of parameters) {
             if (!parameter.Value) continue;
             setSecret(parameter.Value);
         }
 
         if (isLoadEnv) {
-            console.log('Starting to load environment variables to GitHub Actions');
+            info('Starting to load environment variables to GitHub Actions');
             for (const parameter of parameters) {
                 if (!parameter.Name || !parameter.Value) continue;
                 exportVariable(service.transformKey(parameter.Name), parameter.Value);
@@ -32,7 +33,7 @@ async function bootstrap() {
         }
 
         if (envFileName) {
-            console.log(`Starting to create environment file: ${envFileName}`);
+            info(`Starting to create environment file: ${envFileName}`);
 
             const envFile = fs.createWriteStream(envFileName);
             for (const parameter of res?.Parameters || []) {
@@ -41,9 +42,7 @@ async function bootstrap() {
             }
             envFile.end();
 
-            setOutput('??', 'test');
-
-            console.log(`Environment file creation completed.`);
+            info(`Environment file creation completed.`);
         }
     } catch (error) {
         if (error instanceof Error) {
