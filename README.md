@@ -1,18 +1,18 @@
 # SSM Parameter Store Env Loader
 
-AWS SSM Parameter Store에서 파라미터를 가져와 GitHub Actions 워크플로우의 환경 변수로 설정하거나 `.env` 파일로 저장하는 GitHub Action입니다.
+A GitHub Action that fetches parameters from AWS SSM Parameter Store and either exports them as environment variables or saves them to a file (e.g., `.env`).
 
-## 주요 기능
+## Features
 
-- **재귀적 검색**: 지정된 경로(`aws-base-path`) 하위의 모든 파라미터를 재귀적으로 가져옵니다.
-- **자동 복호화**: SecureString 타입의 파라미터를 자동으로 복호화합니다.
-- **보안 처리**: 가져온 모든 값은 GitHub Actions 로그에서 자동으로 마스킹(Secret) 처리됩니다.
-- **키 변환**: 파라미터 경로의 마지막 부분만 추출하여 환경 변수 키로 사용합니다. (예: `/prod/service/DB_HOST` -> `DB_HOST`)
-- **유연한 출력**: 환경 변수로 즉시 로드하거나, 파일(예: `.env`)로 저장할 수 있습니다.
+- **Recursive Search**: Automatically fetches all parameters under the specified `aws-base-path` recursively.
+- **Auto Decryption**: Automatically decrypts `SecureString` parameters.
+- **Security First**: All fetched values are automatically masked as secrets in GitHub Actions logs.
+- **Key Transformation**: Parameter paths are trimmed to their base names (e.g., `/prod/service/DB_HOST` becomes `DB_HOST`).
+- **Flexible Output**: Load directly into the GitHub Actions environment or export to an environment file.
 
-## 사용 방법 (Usage)
+## Usage
 
-`.github/workflows` 디렉토리의 워크플로우 파일(YAML)에서 다음과 같이 사용합니다.
+In your `.github/workflows` YAML file:
 
 ```yaml
 steps:
@@ -24,65 +24,64 @@ steps:
       aws-region: ap-northeast-2
 
   - name: Load Secrets from SSM
-    uses: ./ # 또는 게시된 액션 이름 사용 (예: luviny/aws-ssm-parameter-store-env-loader@v1)
+    uses: luviny/aws-ssm-parameter-store-env-loader@v1 # Replace with actual version
     with:
       aws-base-path: /my-service/prod/
-      # 선택 사항: 기본값 ap-northeast-2
+      # Optional: default is ap-northeast-2
       aws-region: ap-northeast-2
-      # 선택 사항: 환경 변수로 로드 여부 (기본값 true)
+      # Optional: whether to export to env variables (default true)
       load-env: true
-      # 선택 사항: .env 파일로 저장하려면 파일명 지정
+      # Optional: specify a filename to create an env file
       env-file-name: .env
 
   - name: Check Env
     run: |
-      echo "DB_HOST is set to $DB_HOST" # 값은 마스킹되어 ***로 표시됨
+      echo "DB_HOST is set to $DB_HOST" # Value will be masked as ***
 ```
 
-## 입력 변수 (Inputs)
+## Inputs
 
-| 입력값 (Input) | 필수 여부 | 기본값 | 설명 |
+| Input | Required | Default | Description |
 | :--- | :---: | :---: | :--- |
-| `aws-base-path` | **Yes** | - | SSM Parameter Store에서 검색할 기본 경로입니다. 재귀적으로 검색됩니다. |
-| `aws-region` | No | `ap-northeast-2` | AWS 리전입니다. |
-| `load-env` | No | `true` | 가져온 파라미터를 현재 워크플로우의 환경 변수로 등록할지 여부입니다. |
-| `env-file-name` | No | - | 파라미터를 저장할 파일 이름입니다. (예: `.env`). 지정하지 않으면 파일을 생성하지 않습니다. |
+| `aws-base-path` | **Yes** | - | The base path in SSM Parameter Store to search recursively. |
+| `aws-region` | No | `ap-northeast-2` | The AWS region. |
+| `load-env` | No | `true` | Whether to export the parameters as environment variables. |
+| `env-file-name` | No | - | The output filename to store parameters (e.g. `.env`). |
 
-## 동작 예시
+## Example
 
-SSM Parameter Store에 다음과 같은 값이 저장되어 있다고 가정합니다:
-
+If your SSM Parameter Store has:
 - `/my-service/prod/DATABASE_URL`: `postgres://...`
 - `/my-service/prod/API_KEY`: `secret-key`
 
-`aws-base-path: /my-service/prod/`로 실행 시:
+Running with `aws-base-path: /my-service/prod/`:
 
-1. **환경 변수 로드 (`load-env: true`)**:
-   - `DATABASE_URL`과 `API_KEY`가 환경 변수로 등록되어 이후 단계에서 `$DATABASE_URL`, `$API_KEY` 또는 `${{ env.DATABASE_URL }}`로 접근 가능합니다.
+1. **Environment Variables (`load-env: true`)**:
+   - `DATABASE_URL` and `API_KEY` will be available in subsequent steps via `$DATABASE_URL` or `${{ env.DATABASE_URL }}`.
 
-2. **파일 생성 (`env-file-name: .env`)**:
-   - `.env` 파일이 생성되며 내용은 다음과 같습니다.
+2. **Environment File (`env-file-name: .env`)**:
+   - A `.env` file will be created:
      ```env
      DATABASE_URL="postgres://..."
      API_KEY="secret-key"
      ```
 
-## 개발 및 빌드
+## Development
 
-이 프로젝트는 TypeScript로 작성되었습니다.
+This project is built with TypeScript.
 
-### 의존성 설치
+### Install Dependencies
 ```bash
 pnpm install
 ```
 
-### 빌드
-GitHub Actions에서 실행하기 위해 `ncc`를 사용하여 단일 파일로 빌드합니다.
+### Build
+Build the project into a single file using `ncc` for GitHub Actions:
 ```bash
 pnpm build
 ```
 
-### 로컬 실행
+### Development
 ```bash
 pnpm dev
 ```
