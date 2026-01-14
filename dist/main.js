@@ -54111,7 +54111,7 @@ async function bootstrap() {
         const service = new service_1.Service({ region: awsRegion });
         (0, core_1.startGroup)('Fetch SSM Parameters');
         const res = await service.findAll(awsBasePath);
-        const parameters = res?.Parameters || [];
+        const parameters = res || [];
         (0, core_1.info)(`Total ${parameters.length} parameter(s) fetched from ${awsBasePath}`);
         if (!parameters.length)
             return;
@@ -54132,7 +54132,7 @@ async function bootstrap() {
         if (envFileName) {
             (0, core_1.info)(`Starting to create environment file: ${envFileName}`);
             const envFile = fs.createWriteStream(envFileName);
-            for (const parameter of res?.Parameters || []) {
+            for (const parameter of parameters) {
                 if (!parameter.Name || !parameter.Value)
                     continue;
                 envFile.write(`${service.transformKey(parameter.Name)}="${parameter.Value.replace(/\n/g, '\\n')}"\n`);
@@ -54170,13 +54170,24 @@ class Service {
             region: data.region,
         });
     }
+    // 모든 파라미터를 모아서 배열로 반환하도록 수정
     async findAll(path) {
-        const command = new client_ssm_1.GetParametersByPathCommand({
+        const paginatorConfig = {
+            client: this.client,
+            pageSize: 10, // 한 번에 가져올 개수
+        };
+        const commandInput = {
             Path: path,
             Recursive: true,
             WithDecryption: true,
-        });
-        return this.client.send(command);
+        };
+        const allParameters = [];
+        for await (const page of (0, client_ssm_1.paginateGetParametersByPath)(paginatorConfig, commandInput)) {
+            if (page.Parameters) {
+                allParameters.push(...page.Parameters);
+            }
+        }
+        return allParameters;
     }
     transformKey(key) {
         const lastSlashIndex = key.lastIndexOf('/');

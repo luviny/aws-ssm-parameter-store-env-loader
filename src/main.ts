@@ -1,7 +1,6 @@
-import { getInput, setFailed, setOutput, debug, exportVariable, setSecret, startGroup, info } from '@actions/core';
+import { exportVariable, getInput, info, setFailed, setSecret, startGroup } from '@actions/core';
 import { Service } from './service';
 import * as fs from 'node:fs';
-import { stdout } from 'node:process';
 
 async function bootstrap() {
     try {
@@ -14,7 +13,7 @@ async function bootstrap() {
 
         startGroup('Fetch SSM Parameters');
         const res = await service.findAll(awsBasePath);
-        const parameters = res?.Parameters || [];
+        const parameters = res || [];
 
         info(`Total ${parameters.length} parameter(s) fetched from ${awsBasePath}`);
 
@@ -38,7 +37,7 @@ async function bootstrap() {
             info(`Starting to create environment file: ${envFileName}`);
 
             const envFile = fs.createWriteStream(envFileName);
-            for (const parameter of res?.Parameters || []) {
+            for (const parameter of parameters) {
                 if (!parameter.Name || !parameter.Value) continue;
                 envFile.write(`${service.transformKey(parameter.Name)}="${parameter.Value.replace(/\n/g, '\\n')}"\n`);
             }

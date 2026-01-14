@@ -1,4 +1,4 @@
-import { GetParametersByPathCommand, SSMClient } from '@aws-sdk/client-ssm';
+import { SSMClient, paginateGetParametersByPath } from '@aws-sdk/client-ssm';
 
 export class Service {
     private client: SSMClient;
@@ -9,13 +9,28 @@ export class Service {
         });
     }
 
+    // 모든 파라미터를 모아서 배열로 반환하도록 수정
     async findAll(path: string) {
-        const command = new GetParametersByPathCommand({
+        const paginatorConfig = {
+            client: this.client,
+            pageSize: 10, // 한 번에 가져올 개수
+        };
+
+        const commandInput = {
             Path: path,
             Recursive: true,
             WithDecryption: true,
-        });
-        return this.client.send(command);
+        };
+
+        const allParameters = [];
+
+        for await (const page of paginateGetParametersByPath(paginatorConfig, commandInput)) {
+            if (page.Parameters) {
+                allParameters.push(...page.Parameters);
+            }
+        }
+
+        return allParameters;
     }
 
     transformKey(key: string) {
