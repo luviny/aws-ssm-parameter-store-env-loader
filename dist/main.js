@@ -54115,11 +54115,12 @@ async function bootstrap() {
         (0, core_1.info)(`Total ${parameters.length} parameter(s) fetched from ${awsBasePath}`);
         if (!parameters.length)
             return;
-        // info('Processing parameter encryption');
-        // for (const parameter of parameters) {
-        //     if (!parameter.Value) continue;
-        //     setSecret(parameter.Value);
-        // }
+        (0, core_1.info)('Processing parameter encryption');
+        for (const parameter of parameters) {
+            if (!parameter.Value)
+                continue;
+            (0, core_1.setSecret)(parameter.Value);
+        }
         if (isLoadEnv) {
             (0, core_1.info)('Starting to load environment variables to GitHub Actions');
             for (const parameter of parameters) {

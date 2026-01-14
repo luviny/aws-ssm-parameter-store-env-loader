@@ -19,11 +19,11 @@ async function bootstrap() {
 
         if (!parameters.length) return;
 
-        // info('Processing parameter encryption');
-        // for (const parameter of parameters) {
-        //     if (!parameter.Value) continue;
-        //     setSecret(parameter.Value);
-        // }
+        info('Processing parameter encryption');
+        for (const parameter of parameters) {
+            if (!parameter.Value) continue;
+            setSecret(parameter.Value);
+        }
 
         if (isLoadEnv) {
             info('Starting to load environment variables to GitHub Actions');
