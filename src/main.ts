@@ -1,4 +1,4 @@
-import { getInput, setFailed, setOutput, debug, exportVariable } from '@actions/core';
+import { getInput, setFailed, setOutput, debug, exportVariable, setSecret } from '@actions/core';
 import { Service } from './service';
 
 async function bootstrap() {
@@ -11,7 +11,8 @@ async function bootstrap() {
         const res = await service.findAll(awsBasePath);
 
         for (const parameter of res?.Parameters || []) {
-            if (!parameter.Name) return;
+            if (!parameter.Name || !parameter.Value) return;
+            setSecret(parameter.Value);
             exportVariable(service.transformKey(parameter.Name), parameter.Value);
         }
     } catch (error) {

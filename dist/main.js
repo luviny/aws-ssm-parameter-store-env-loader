@@ -56216,8 +56216,9 @@ async function bootstrap() {
         const service = new service_1.Service({ region: awsRegion });
         const res = await service.findAll(awsBasePath);
         for (const parameter of res?.Parameters || []) {
-            if (!parameter.Name)
+            if (!parameter.Name || !parameter.Value)
                 return;
+            (0, core_1.setSecret)(parameter.Value);
             (0, core_1.exportVariable)(service.transformKey(parameter.Name), parameter.Value);
         }
     }
