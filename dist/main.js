@@ -54109,18 +54109,19 @@ async function bootstrap() {
         const isLoadEnv = (0, core_1.getInput)('load-env') === 'true';
         const envFileName = (0, core_1.getInput)('env-file-name');
         const service = new service_1.Service({ region: awsRegion });
+        (0, core_1.startGroup)('Fetch SSM Parameters');
         const res = await service.findAll(awsBasePath);
         const parameters = res?.Parameters || [];
         if (!parameters.length)
             return;
-        console.log('Processing parameter encryption');
+        (0, core_1.info)('Processing parameter encryption');
         for (const parameter of parameters) {
             if (!parameter.Value)
                 continue;
             (0, core_1.setSecret)(parameter.Value);
         }
         if (isLoadEnv) {
-            console.log('Starting to load environment variables to GitHub Actions');
+            (0, core_1.info)('Starting to load environment variables to GitHub Actions');
             for (const parameter of parameters) {
                 if (!parameter.Name || !parameter.Value)
                     continue;
@@ -54128,7 +54129,7 @@ async function bootstrap() {
             }
         }
         if (envFileName) {
-            console.log(`Starting to create environment file: ${envFileName}`);
+            (0, core_1.info)(`Starting to create environment file: ${envFileName}`);
             const envFile = fs.createWriteStream(envFileName);
             for (const parameter of res?.Parameters || []) {
                 if (!parameter.Name || !parameter.Value)
@@ -54136,8 +54137,7 @@ async function bootstrap() {
                 envFile.write(`${service.transformKey(parameter.Name)}="${parameter.Value.replace(/\n/g, '\\n')}"\n`);
             }
             envFile.end();
-            (0, core_1.setOutput)('??', 'test');
-            console.log(`Environment file creation completed.`);
+            (0, core_1.info)(`Environment file creation completed.`);
         }
     }
     catch (error) {
