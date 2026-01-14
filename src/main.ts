@@ -1,6 +1,7 @@
 import { getInput, setFailed, setOutput, debug, exportVariable, setSecret } from '@actions/core';
 import { Service } from './service';
 import * as fs from 'node:fs';
+import { stdout } from 'node:process';
 
 async function bootstrap() {
     try {
@@ -40,7 +41,9 @@ async function bootstrap() {
             }
             envFile.end();
 
-            console.log(`Environment file creation completed: ${envFileName}`);
+            setOutput('??', 'test');
+
+            console.log(`Environment file creation completed.`);
         }
     } catch (error) {
         if (error instanceof Error) {
