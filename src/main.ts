@@ -8,6 +8,7 @@ async function bootstrap() {
         const awsBasePath = getInput('aws-base-path');
         const isLoadEnv = getInput('load-env') === 'true';
         const envFileName = getInput('env-file-name');
+        console.log(envFileName);
         const service = new Service({ region: awsRegion });
 
         const res = await service.findAll(awsBasePath);
