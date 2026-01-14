@@ -52,7 +52,7 @@ steps:
 
 | Output | Description |
 | :--- | :--- |
-| `_COMPRESSED_ENV_` | Gzip compressed and Base64 encoded JSON string of all fetched parameters. |
+| `compressed-env` | Gzip compressed and Base64 encoded JSON string of all fetched parameters. |
 
 ## Usage across jobs
 
@@ -63,7 +63,7 @@ jobs:
   setup:
     runs-on: ubuntu-latest
     outputs:
-      env: ${{ steps.ssm.outputs._COMPRESSED_ENV_ }}
+      env: ${{ steps.ssm.outputs.compressed-env }}
     steps:
       - name: Load Secrets from SSM
         id: ssm

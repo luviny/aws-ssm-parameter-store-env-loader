@@ -22,6 +22,7 @@ jobs:
         aws-region: ap-northeast-2
 
     - uses: ./
+      id: ssm
       with:
         aws-region: ap-northeast-2
         aws-base-path: /test
@@ -33,3 +34,6 @@ jobs:
       
     - name: Env File Test
       run: cat .env
+      
+    - name: Compressed Env Test
+      run: echo "${{ steps.ssm.outputs.compressed-env }}"
