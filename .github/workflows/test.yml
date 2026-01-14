@@ -36,4 +36,4 @@ jobs:
       run: cat .env
       
     - name: Compressed Env Test
-      run: echo "${{ steps.ssm.outputs.compressed-env }}"
+      run: echo "${{ steps.ssm.outputs.compressed-env }}" | base64 -d | gunzip
