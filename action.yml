@@ -1,0 +1,10 @@
+name: 'SSM Parameter Store Env Loader'
+description: 'Load environment variables from AWS SSM Parameter Store'
+inputs:
+  example-input:
+    description: 'An example input parameter'
+    required: true
+    default: 'default value'
+runs:
+  using: node20
+  main: 'dist/main.js'
