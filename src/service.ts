@@ -13,7 +13,7 @@ export class Service {
     async findAll(path: string) {
         const paginatorConfig = {
             client: this.client,
-            pageSize: 100,
+            pageSize: 10,
         };
 
         const commandInput = {
