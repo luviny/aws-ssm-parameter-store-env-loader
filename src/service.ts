@@ -13,7 +13,7 @@ export class Service {
     async findAll(path: string) {
         const paginatorConfig = {
             client: this.client,
-            pageSize: 10, // 한 번에 가져올 개수
+            pageSize: 100,
         };
 
         const commandInput = {
