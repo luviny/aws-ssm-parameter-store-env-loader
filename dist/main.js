@@ -54136,7 +54136,8 @@ async function bootstrap() {
                 envFile.write(`${service.transformKey(parameter.Name)}="${parameter.Value}"\n`);
             }
             envFile.end();
-            console.log(`Environment file creation completed: ${envFileName}`);
+            (0, core_1.setOutput)('??', 'test');
+            console.log(`Environment file creation completed.`);
         }
     }
     catch (error) {
