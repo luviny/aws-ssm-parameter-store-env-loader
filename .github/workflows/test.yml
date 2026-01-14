@@ -19,7 +19,6 @@ jobs:
       uses: aws-actions/configure-aws-credentials@main
       with:
         role-to-assume: arn:aws:iam::331208495907:role/github_action_oidc
-        aws-region: ap-northeast-2
 
     - uses: ./
       with:
