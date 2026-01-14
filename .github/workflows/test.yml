@@ -1,8 +1,10 @@
 name: test.yml
 on:
- push:
-  branches:
-   - dev
+  workflow_dispatch:
+  workflow_call: 
+  push:
+   branches:
+    - dev
 
 permissions:
   id-token: write
