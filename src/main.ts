@@ -16,6 +16,8 @@ async function bootstrap() {
         const res = await service.findAll(awsBasePath);
         const parameters = res?.Parameters || [];
 
+        info(`Total ${parameters.length} parameter(s) fetched from ${awsBasePath}`);
+
         if (!parameters.length) return;
 
         info('Processing parameter encryption');

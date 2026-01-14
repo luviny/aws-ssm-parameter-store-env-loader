@@ -54112,6 +54112,7 @@ async function bootstrap() {
         (0, core_1.startGroup)('Fetch SSM Parameters');
         const res = await service.findAll(awsBasePath);
         const parameters = res?.Parameters || [];
+        (0, core_1.info)(`Total ${parameters.length} parameter(s) fetched from ${awsBasePath}`);
         if (!parameters.length)
             return;
         (0, core_1.info)('Processing parameter encryption');
