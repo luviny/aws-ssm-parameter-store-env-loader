@@ -25907,9 +25907,12 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core_1 = __importDefault(__nccwpck_require__(9550));
 async function run() {
     try {
-        const input = core_1.default.getInput('example-input');
-        console.log(`Hello, ${input}!`);
-        // Example of setting an output
+        const awsRoleToAssume = core_1.default.getInput('aws-role-to-assume');
+        const awsRegion = core_1.default.getInput('aws-region');
+        const awsPath = core_1.default.getInput('aws-path');
+        console.log('path', awsPath);
+        console.log('awsRegion', awsRegion);
+        console.log('awsPath', awsPath);
         core_1.default.setOutput('time', new Date().toTimeString());
     }
     catch (error) {

@@ -1,10 +1,18 @@
 name: 'SSM Parameter Store Env Loader'
 description: 'Load environment variables from AWS SSM Parameter Store'
 inputs:
-  example-input:
-    description: 'An example input parameter'
+  aws-role-to-assume:
+    description: 'AWS role to assume for SSM access'
+    required: false
+  aws-region:
+    description: 'AWS region for SSM access'
+    required: false
+    default: ap-northeast-2
+  aws-path:
     required: true
-    default: 'default value'
+    description: 'AWS SSM base path'
+
+
 runs:
   using: node20
   main: 'dist/main.js'

@@ -1,0 +1,16 @@
+name: test.yml
+on:
+ push:
+  branches:
+   - dev
+
+jobs:
+  test:
+   runs-on: ubuntu-latest
+   steps:
+    - uses: actions/checkout@v6
+    - uses: ./
+      with:
+        aws-role-to-assume: assume-test-12345
+        aws-region: ap-northeast-2
+        aws-path: /test
