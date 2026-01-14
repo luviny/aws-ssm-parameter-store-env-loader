@@ -54141,17 +54141,19 @@ async function bootstrap() {
             envFile.end();
             (0, core_1.info)(`Environment file creation completed.`);
         }
-        const object = parameters.length
+        const envObject = parameters.length
             ? parameters.reduce((acc, cur) => {
                 const name = cur.Name;
                 const value = cur.Value;
-                if (name && value)
-                    acc[name] = value;
+                if (name && value) {
+                    acc[service.transformKey(name)] = value;
+                }
                 return acc;
             }, {})
             : {};
-        const compressed = zlib.gzipSync(JSON.stringify(object));
-        (0, core_1.exportVariable)('_COMPRESSED_ENV_', compressed.toString('base64'));
+        const compressed = zlib.gzipSync(JSON.stringify(envObject));
+        const base64 = compressed.toString('base64');
+        (0, core_1.setOutput)('compressed-env', base64);
     }
     catch (error) {
         if (error instanceof Error) {

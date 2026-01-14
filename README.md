@@ -48,6 +48,39 @@ steps:
 | `load-env` | No | `true` | Whether to export the parameters as environment variables. |
 | `env-file-name` | No | - | The output filename to store parameters (e.g. `.env`). |
 
+## Outputs
+
+| Output | Description |
+| :--- | :--- |
+| `_COMPRESSED_ENV_` | Gzip compressed and Base64 encoded JSON string of all fetched parameters. |
+
+## Usage across jobs
+
+You can use the `_COMPRESSED_ENV_` output to pass environment variables between different jobs. This is useful when you want to avoid fetching parameters from SSM multiple times.
+
+```yaml
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      env: ${{ steps.ssm.outputs._COMPRESSED_ENV_ }}
+    steps:
+      - name: Load Secrets from SSM
+        id: ssm
+        uses: luviny/aws-ssm-parameter-store-env-loader@v1
+        with:
+          aws-base-path: /my-service/prod/
+
+  build:
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - name: Use Secrets
+        run: |
+          # Example of decompressing and using the env
+          echo "${{ needs.setup.outputs.env }}" | base64 -d | gunzip
+```
+
 ## Example
 
 If your SSM Parameter Store has:
