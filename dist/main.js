@@ -54083,6 +54083,10 @@ class Service {
         });
         return this.client.send(command);
     }
+    transformKey(key) {
+        const lastSlashIndex = key.lastIndexOf('/');
+        return lastSlashIndex === -1 ? key : key.substring(lastSlashIndex + 1);
+    }
 }
 exports.Service = Service;
 
@@ -56209,9 +56213,13 @@ async function bootstrap() {
     try {
         const awsRegion = (0, core_1.getInput)('aws-region');
         const awsBasePath = (0, core_1.getInput)('aws-base-path');
-        const client = new service_1.Service({ region: awsRegion });
-        const resources = await client.findAll(awsBasePath);
-        console.log(resources);
+        const service = new service_1.Service({ region: awsRegion });
+        const res = await service.findAll(awsBasePath);
+        for (const parameter of res?.Parameters || []) {
+            if (!parameter.Name)
+                return;
+            (0, core_1.exportVariable)(service.transformKey(parameter.Name), parameter.Value);
+        }
     }
     catch (error) {
         if (error instanceof Error) {

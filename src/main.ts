@@ -1,4 +1,4 @@
-import { getInput, setFailed, setOutput, debug } from '@actions/core';
+import { getInput, setFailed, setOutput, debug, exportVariable } from '@actions/core';
 import { Service } from './service';
 
 async function bootstrap() {
@@ -6,10 +6,14 @@ async function bootstrap() {
         const awsRegion = getInput('aws-region');
         const awsBasePath = getInput('aws-base-path');
 
-        const client = new Service({ region: awsRegion });
+        const service = new Service({ region: awsRegion });
 
-        const resources = await client.findAll(awsBasePath);
-        console.log(resources);
+        const res = await service.findAll(awsBasePath);
+
+        for (const parameter of res?.Parameters || []) {
+            if (!parameter.Name) return;
+            exportVariable(service.transformKey(parameter.Name), parameter.Value);
+        }
     } catch (error) {
         if (error instanceof Error) {
             setFailed(error.message);

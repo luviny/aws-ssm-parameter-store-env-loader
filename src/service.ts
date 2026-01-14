@@ -17,4 +17,9 @@ export class Service {
         });
         return this.client.send(command);
     }
+
+    transformKey(key: string) {
+        const lastSlashIndex = key.lastIndexOf('/');
+        return lastSlashIndex === -1 ? key : key.substring(lastSlashIndex + 1);
+    }
 }
