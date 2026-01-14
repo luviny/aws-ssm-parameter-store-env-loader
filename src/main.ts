@@ -14,15 +14,18 @@ async function bootstrap() {
         const res = await service.findAll(awsBasePath);
         const parameters = res?.Parameters || [];
 
+        if (!parameters.length) return;
+
+        console.log('Processing parameter encryption');
         for (const parameter of parameters) {
-            console.log('Processing parameter encryption');
-            if (parameter.Value) setSecret(parameter.Value);
+            if (!parameter.Value) continue;
+            setSecret(parameter.Value);
         }
 
         if (isLoadEnv) {
             console.log('Starting to load environment variables to GitHub Actions');
             for (const parameter of parameters) {
-                if (!parameter.Name || !parameter.Value) return;
+                if (!parameter.Name || !parameter.Value) continue;
                 exportVariable(service.transformKey(parameter.Name), parameter.Value);
             }
         }
@@ -32,7 +35,7 @@ async function bootstrap() {
 
             const envFile = fs.createWriteStream(envFileName);
             for (const parameter of res?.Parameters || []) {
-                if (!parameter.Name || !parameter.Value) return;
+                if (!parameter.Name || !parameter.Value) continue;
                 envFile.write(`${service.transformKey(parameter.Name)}="${parameter.Value}"\n`);
             }
             envFile.end();
