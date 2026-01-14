@@ -54060,6 +54060,91 @@ module.exports = {
 
 /***/ }),
 
+/***/ 7353:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const core_1 = __nccwpck_require__(9550);
+const service_1 = __nccwpck_require__(8885);
+const fs = __importStar(__nccwpck_require__(3024));
+async function bootstrap() {
+    try {
+        const awsRegion = (0, core_1.getInput)('aws-region');
+        const awsBasePath = (0, core_1.getInput)('aws-base-path');
+        const isLoadEnv = (0, core_1.getInput)('load-env') === 'true';
+        const envFileName = (0, core_1.getInput)('env-file-name');
+        console.log(envFileName);
+        const service = new service_1.Service({ region: awsRegion });
+        const res = await service.findAll(awsBasePath);
+        if (isLoadEnv) {
+            for (const parameter of res?.Parameters || []) {
+                if (!parameter.Name || !parameter.Value)
+                    return;
+                (0, core_1.setSecret)(parameter.Value);
+                (0, core_1.exportVariable)(service.transformKey(parameter.Name), parameter.Value);
+            }
+        }
+        if (envFileName) {
+            (0, core_1.debug)(`Starting to create environment file: ${envFileName}`);
+            const envFile = fs.createWriteStream(envFileName);
+            for (const parameter of res?.Parameters || []) {
+                if (!parameter.Name || !parameter.Value)
+                    return;
+                envFile.write(`${service.transformKey(parameter.Name)}="${parameter.Value}"\n`);
+            }
+            envFile.end();
+            (0, core_1.debug)(`Environment file creation completed: ${envFileName}`);
+        }
+    }
+    catch (error) {
+        if (error instanceof Error) {
+            (0, core_1.setFailed)(error.message);
+        }
+        else {
+            (0, core_1.setFailed)(String(error));
+        }
+    }
+}
+bootstrap();
+
+
+/***/ }),
+
 /***/ 8885:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
@@ -56200,41 +56285,12 @@ module.exports = /*#__PURE__*/JSON.parse('{"name":"@aws-sdk/client-ssm","descrip
 /******/ 	})();
 /******/ 	
 /************************************************************************/
-var __webpack_exports__ = {};
-// This entry need to be wrapped in an IIFE because it need to be in strict mode.
-(() => {
-"use strict";
-var exports = __webpack_exports__;
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-const core_1 = __nccwpck_require__(9550);
-const service_1 = __nccwpck_require__(8885);
-async function bootstrap() {
-    try {
-        const awsRegion = (0, core_1.getInput)('aws-region');
-        const awsBasePath = (0, core_1.getInput)('aws-base-path');
-        const service = new service_1.Service({ region: awsRegion });
-        const res = await service.findAll(awsBasePath);
-        for (const parameter of res?.Parameters || []) {
-            if (!parameter.Name || !parameter.Value)
-                return;
-            (0, core_1.setSecret)(parameter.Value);
-            (0, core_1.exportVariable)(service.transformKey(parameter.Name), parameter.Value);
-        }
-    }
-    catch (error) {
-        if (error instanceof Error) {
-            (0, core_1.setFailed)(error.message);
-        }
-        else {
-            (0, core_1.setFailed)(String(error));
-        }
-    }
-}
-bootstrap();
-
-})();
-
-module.exports = __webpack_exports__;
+/******/ 	
+/******/ 	// startup
+/******/ 	// Load entry module and return exports
+/******/ 	// This entry module is referenced by other modules so it can't be inlined
+/******/ 	var __webpack_exports__ = __nccwpck_require__(7353);
+/******/ 	module.exports = __webpack_exports__;
+/******/ 	
 /******/ })()
 ;
