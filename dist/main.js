@@ -54111,11 +54111,15 @@ async function bootstrap() {
         console.log(envFileName);
         const service = new service_1.Service({ region: awsRegion });
         const res = await service.findAll(awsBasePath);
+        const parameters = res?.Parameters || [];
+        for (const parameter of parameters) {
+            if (parameter.Value)
+                (0, core_1.setSecret)(parameter.Value);
+        }
         if (isLoadEnv) {
-            for (const parameter of res?.Parameters || []) {
+            for (const parameter of parameters) {
                 if (!parameter.Name || !parameter.Value)
                     return;
-                (0, core_1.setSecret)(parameter.Value);
                 (0, core_1.exportVariable)(service.transformKey(parameter.Name), parameter.Value);
             }
         }
