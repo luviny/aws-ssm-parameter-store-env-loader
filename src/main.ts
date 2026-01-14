@@ -1,6 +1,7 @@
 import { exportVariable, getInput, info, setFailed, setSecret, startGroup } from '@actions/core';
 import { Service } from './service';
 import * as fs from 'node:fs';
+import * as zlib from 'node:zlib';
 
 async function bootstrap() {
     try {
@@ -45,6 +46,22 @@ async function bootstrap() {
 
             info(`Environment file creation completed.`);
         }
+
+        const object = parameters.length
+            ? parameters.reduce(
+                  (acc, cur) => {
+                      const name = cur.Name;
+                      const value = cur.Value;
+                      if (name && value) acc[name] = value;
+                      return acc;
+                  },
+                  {} as Record<string, string>,
+              )
+            : {};
+
+        const compressed = zlib.gzipSync(JSON.stringify(object));
+
+        exportVariable('_COMPRESSED_ENV_', compressed.toString('base64'));
     } catch (error) {
         if (error instanceof Error) {
             setFailed(error.message);

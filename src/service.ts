@@ -9,7 +9,6 @@ export class Service {
         });
     }
 
-    // 모든 파라미터를 모아서 배열로 반환하도록 수정
     async findAll(path: string) {
         const paginatorConfig = {
             client: this.client,

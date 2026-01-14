@@ -54102,6 +54102,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core_1 = __nccwpck_require__(9550);
 const service_1 = __nccwpck_require__(8885);
 const fs = __importStar(__nccwpck_require__(3024));
+const zlib = __importStar(__nccwpck_require__(8522));
 async function bootstrap() {
     try {
         const awsRegion = (0, core_1.getInput)('aws-region');
@@ -54140,6 +54141,17 @@ async function bootstrap() {
             envFile.end();
             (0, core_1.info)(`Environment file creation completed.`);
         }
+        const object = parameters.length
+            ? parameters.reduce((acc, cur) => {
+                const name = cur.Name;
+                const value = cur.Value;
+                if (name && value)
+                    acc[name] = value;
+                return acc;
+            }, {})
+            : {};
+        const compressed = zlib.gzipSync(JSON.stringify(object));
+        (0, core_1.exportVariable)('_COMPRESSED_ENV_', compressed.toString('base64'));
     }
     catch (error) {
         if (error instanceof Error) {
@@ -54170,7 +54182,6 @@ class Service {
             region: data.region,
         });
     }
-    // 모든 파라미터를 모아서 배열로 반환하도록 수정
     async findAll(path) {
         const paginatorConfig = {
             client: this.client,
@@ -54380,6 +54391,14 @@ module.exports = require("node:stream");
 
 "use strict";
 module.exports = require("node:util");
+
+/***/ }),
+
+/***/ 8522:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("node:zlib");
 
 /***/ }),
 
