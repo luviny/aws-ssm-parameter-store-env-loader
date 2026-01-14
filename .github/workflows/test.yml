@@ -29,7 +29,7 @@ jobs:
         env-file-name: .env
         
     - name: Env Test
-      run: echo "${{ env.DB_HOST }}"
+      run: echo "${{ env }}"
       
     - name: Env File Test
       run: cat .env
