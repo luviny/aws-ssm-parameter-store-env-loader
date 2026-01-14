@@ -54060,6 +54060,35 @@ module.exports = {
 
 /***/ }),
 
+/***/ 8885:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.Service = void 0;
+const client_ssm_1 = __nccwpck_require__(9171);
+class Service {
+    client;
+    constructor(data) {
+        this.client = new client_ssm_1.SSMClient({
+            region: data.region,
+        });
+    }
+    async findAll(path) {
+        const command = new client_ssm_1.GetParametersByPathCommand({
+            Path: path,
+            Recursive: true,
+            WithDecryption: true,
+        });
+        return this.client.send(command);
+    }
+}
+exports.Service = Service;
+
+
+/***/ }),
+
 /***/ 2613:
 /***/ ((module) => {
 
@@ -56175,28 +56204,14 @@ var exports = __webpack_exports__;
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core_1 = __nccwpck_require__(9550);
-const client_ssm_1 = __nccwpck_require__(9171);
-async function run() {
+const service_1 = __nccwpck_require__(8885);
+async function bootstrap() {
     try {
-        const roleToAssume = (0, core_1.getInput)('aws-role-to-assume');
-        const region = (0, core_1.getInput)('aws-region') || 'ap-northeast-2';
-        const path = (0, core_1.getInput)('aws-path');
-        console.log(`Region: ${region}`);
-        console.log(`Path: ${path}`);
-        if (roleToAssume) {
-            console.log(`Role to assume: ${roleToAssume} (Note: Automatic role assumption within this action is not yet implemented. Please use aws-actions/configure-aws-credentials before this step.)`);
-        }
-        const ssmClient = new client_ssm_1.SSMClient({ region });
-        // Example: Just listing parameters for now to verify connectivity/logic
-        // logic to fetch parameters will go here.
-        console.log('SSM Client initialized.');
-        // const command = new GetParametersByPathCommand({
-        //   Path: path,
-        //   Recursive: true,
-        //   WithDecryption: true
-        // });
-        // const response = await ssmClient.send(command);
-        // console.log(`Found ${response.Parameters?.length || 0} parameters.`);
+        const awsRegion = (0, core_1.getInput)('aws-region');
+        const awsBasePath = (0, core_1.getInput)('aws-base-path');
+        const client = new service_1.Service({ region: awsRegion });
+        const resources = await client.findAll(awsBasePath);
+        console.log(resources);
     }
     catch (error) {
         if (error instanceof Error) {
@@ -56207,7 +56222,7 @@ async function run() {
         }
     }
 }
-run();
+bootstrap();
 
 })();
 

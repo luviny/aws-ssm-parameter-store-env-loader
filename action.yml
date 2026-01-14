@@ -1,14 +1,11 @@
 name: 'SSM Parameter Store Env Loader'
 description: 'Load environment variables from AWS SSM Parameter Store'
 inputs:
-  aws-role-to-assume:
-    description: 'The ARN of the role to assume'
-    required: false
   aws-region:
     description: 'The AWS region'
     required: false
     default: 'ap-northeast-2'
-  aws-path:
+  aws-base-path:
     description: 'The path in SSM Parameter Store'
     required: true
 runs:

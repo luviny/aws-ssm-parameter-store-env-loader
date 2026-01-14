@@ -1,26 +1,15 @@
 import { getInput, setFailed, setOutput, debug } from '@actions/core';
+import { Service } from './service';
 
-async function run() {
+async function bootstrap() {
     try {
-        const roleToAssume = getInput('aws-role-to-assume');
-        const region = getInput('aws-region') || 'ap-northeast-2';
-        const path = getInput('aws-path');
+        const awsRegion = getInput('aws-region');
+        const awsBasePath = getInput('aws-base-path');
 
-        console.log(`Region: ${region}`);
-        console.log(`Path: ${path}`);
-        if (roleToAssume) {
-            console.log(
-                `Role to assume: ${roleToAssume} (Note: Automatic role assumption within this action is not yet implemented. Please use aws-actions/configure-aws-credentials before this step.)`,
-            );
-        }
+        const client = new Service({ region: awsRegion });
 
-        // const command = new GetParametersByPathCommand({
-        //   Path: path,
-        //   Recursive: true,
-        //   WithDecryption: true
-        // });
-        // const response = await ssmClient.send(command);
-        // console.log(`Found ${response.Parameters?.length || 0} parameters.`);
+        const resources = await client.findAll(awsBasePath);
+        console.log(resources);
     } catch (error) {
         if (error instanceof Error) {
             setFailed(error.message);
@@ -30,4 +19,4 @@ async function run() {
     }
 }
 
-run();
+bootstrap();
