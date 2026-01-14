@@ -54108,15 +54108,16 @@ async function bootstrap() {
         const awsBasePath = (0, core_1.getInput)('aws-base-path');
         const isLoadEnv = (0, core_1.getInput)('load-env') === 'true';
         const envFileName = (0, core_1.getInput)('env-file-name');
-        console.log(envFileName);
         const service = new service_1.Service({ region: awsRegion });
         const res = await service.findAll(awsBasePath);
         const parameters = res?.Parameters || [];
         for (const parameter of parameters) {
+            console.log('Processing parameter encryption');
             if (parameter.Value)
                 (0, core_1.setSecret)(parameter.Value);
         }
         if (isLoadEnv) {
+            console.log('Starting to load environment variables to GitHub Actions');
             for (const parameter of parameters) {
                 if (!parameter.Name || !parameter.Value)
                     return;
@@ -54124,7 +54125,7 @@ async function bootstrap() {
             }
         }
         if (envFileName) {
-            (0, core_1.debug)(`Starting to create environment file: ${envFileName}`);
+            console.log(`Starting to create environment file: ${envFileName}`);
             const envFile = fs.createWriteStream(envFileName);
             for (const parameter of res?.Parameters || []) {
                 if (!parameter.Name || !parameter.Value)
@@ -54132,7 +54133,7 @@ async function bootstrap() {
                 envFile.write(`${service.transformKey(parameter.Name)}="${parameter.Value}"\n`);
             }
             envFile.end();
-            (0, core_1.debug)(`Environment file creation completed: ${envFileName}`);
+            console.log(`Environment file creation completed: ${envFileName}`);
         }
     }
     catch (error) {
