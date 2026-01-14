@@ -37,7 +37,7 @@ async function bootstrap() {
             const envFile = fs.createWriteStream(envFileName);
             for (const parameter of res?.Parameters || []) {
                 if (!parameter.Name || !parameter.Value) continue;
-                envFile.write(`${service.transformKey(parameter.Name)}="${parameter.Value}"\n`);
+                envFile.write(`${service.transformKey(parameter.Name)}="${parameter.Value.replace(/\n/g, '\\n')}"\n`);
             }
             envFile.end();
 

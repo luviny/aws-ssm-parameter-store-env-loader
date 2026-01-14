@@ -54133,7 +54133,7 @@ async function bootstrap() {
             for (const parameter of res?.Parameters || []) {
                 if (!parameter.Name || !parameter.Value)
                     continue;
-                envFile.write(`${service.transformKey(parameter.Name)}="${parameter.Value}"\n`);
+                envFile.write(`${service.transformKey(parameter.Name)}="${parameter.Value.replace(/\n/g, '\\n')}"\n`);
             }
             envFile.end();
             (0, core_1.setOutput)('??', 'test');
