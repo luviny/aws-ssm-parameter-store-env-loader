@@ -16,7 +16,7 @@ inputs:
     description: 'The output environment variable file name'
     required: false
 outputs:
-  compressed-env:
+  gzip-env-value:
     description: 'Gzip compressed and Base64 encoded JSON string of all environment variables'
 
 runs:

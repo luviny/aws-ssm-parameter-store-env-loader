@@ -1,4 +1,4 @@
-import { SSMClient, paginateGetParametersByPath } from '@aws-sdk/client-ssm';
+import { SSMClient, paginateGetParametersByPath, Parameter } from '@aws-sdk/client-ssm';
 
 export class Service {
     private client: SSMClient;
@@ -21,7 +21,7 @@ export class Service {
             WithDecryption: true,
         };
 
-        const allParameters = [];
+        const allParameters: Parameter[] = [];
 
         for await (const page of paginateGetParametersByPath(paginatorConfig, commandInput)) {
             if (page.Parameters) {
