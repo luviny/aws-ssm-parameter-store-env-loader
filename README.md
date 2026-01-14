@@ -52,11 +52,10 @@ steps:
 
 | Output | Description |
 | :--- | :--- |
-| `compressed-env` | Gzip compressed and Base64 encoded JSON string of all fetched parameters. |
+| `gzip-env-value` | Gzip compressed and Base64 encoded JSON string of all fetched parameters. |
 
 ## Usage across jobs
-
-You can use the `_COMPRESSED_ENV_` output to pass environment variables between different jobs. This is useful when you want to avoid fetching parameters from SSM multiple times.
+Once the gzip-env-value is obtained, it can be passed as an input to a subsequent job. The [Gzip Env Loader](https://github.com/marketplace/actions/gzip-env-loader) action then assigns the passed value to the job's environment variables.
 
 ```yaml
 jobs:
@@ -97,6 +96,7 @@ Running with `aws-base-path: /my-service/prod/`:
      ```env
      DATABASE_URL="postgres://..."
      API_KEY="secret-key"
+     ```
      ```
 
 ## Development
