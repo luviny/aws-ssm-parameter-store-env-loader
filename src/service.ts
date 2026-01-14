@@ -18,7 +18,7 @@ export class Service {
 
         const commandInput = {
             Path: path,
-            Recursive: true,
+            Recursive: false,
             WithDecryption: true,
         };
 
