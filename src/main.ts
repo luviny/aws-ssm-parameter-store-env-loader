@@ -46,25 +46,6 @@ async function bootstrap() {
 
             info(`Environment file creation completed.`);
         }
-
-        const envObject = parameters.length
-            ? parameters.reduce(
-                  (acc, cur) => {
-                      const name = cur.Name;
-                      const value = cur.Value;
-                      if (name && value) {
-                          acc[service.transformKey(name)] = value;
-                      }
-                      return acc;
-                  },
-                  {} as Record<string, string>,
-              )
-            : {};
-
-        const compressed = zlib.gzipSync(JSON.stringify(envObject));
-        const base64 = compressed.toString('base64');
-
-        setOutput('gzip-env-value', base64);
     } catch (error) {
         if (error instanceof Error) {
             setFailed(error.message);
