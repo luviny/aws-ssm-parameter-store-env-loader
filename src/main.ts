@@ -64,7 +64,6 @@ async function bootstrap() {
         const compressed = zlib.gzipSync(JSON.stringify(envObject));
         const base64 = compressed.toString('base64');
 
-        setSecret(base64);
         setOutput('gzip-env-value', base64);
     } catch (error) {
         if (error instanceof Error) {
