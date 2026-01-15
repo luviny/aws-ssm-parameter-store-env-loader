@@ -34,6 +34,3 @@ jobs:
       
     - name: Env File Test
       run: cat .env
-      
-    - name: Compressed Env Test
-      run: echo "${{ steps.ssm.outputs.gzip-env-value }}" | base64 -d | gunzip
