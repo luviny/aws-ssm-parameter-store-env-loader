@@ -48,38 +48,6 @@ steps:
 | `load-env` | No | `true` | Whether to export the parameters as environment variables. |
 | `env-file-name` | No | - | The output filename to store parameters (e.g. `.env`). |
 
-## Outputs
-
-| Output | Description |
-| :--- | :--- |
-| `gzip-env-value` | Gzip compressed and Base64 encoded JSON string of all fetched parameters. |
-
-## Usage across jobs
-Once the gzip-env-value is obtained, it can be passed as an input to a subsequent job. The [Gzip Env Loader](https://github.com/marketplace/actions/gzip-env-loader) action then assigns the passed value to the job's environment variables.
-
-```yaml
-jobs:
-  setup:
-    runs-on: ubuntu-latest
-    outputs:
-      env: ${{ steps.ssm.outputs.compressed-env }}
-    steps:
-      - name: Load Secrets from SSM
-        id: ssm
-        uses: luviny/aws-ssm-parameter-store-env-loader@v1
-        with:
-          aws-base-path: /my-service/prod/
-
-  build:
-    needs: setup
-    runs-on: ubuntu-latest
-    steps:
-      - name: Use Secrets
-        run: |
-          # Example of decompressing and using the env
-          echo "${{ needs.setup.outputs.env }}" | base64 -d | gunzip
-```
-
 ## Example
 
 If your SSM Parameter Store has:
@@ -96,7 +64,6 @@ Running with `aws-base-path: /my-service/prod/`:
      ```env
      DATABASE_URL="postgres://..."
      API_KEY="secret-key"
-     ```
      ```
 
 ## Development
