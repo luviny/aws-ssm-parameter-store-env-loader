@@ -15,9 +15,6 @@ inputs:
   env-file-name:
     description: 'The output environment variable file name'
     required: false
-outputs:
-  gzip-env-value:
-    description: 'Gzip compressed and Base64 encoded JSON string of all environment variables'
 
 runs:
   using: 'node20'
